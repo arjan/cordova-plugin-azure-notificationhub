@@ -69,10 +69,14 @@ xmlns:android="http://schemas.android.com/apk/res/android"
             </receiver>
         </config-file>
 
+        <framework src="com.android.support:support-v13:23+" />
+        <framework src="com.google.android.gms:play-services-gcm:+" />
+        
         <source-file src="src/android/NotificationHub.java" target-dir="src/msopentech/azure" />
 
-        <lib-file src="src/android/google-play-services.jar" />
-        <lib-file src="src/android/notification-hubs-0.1.jar" />
+        <!--<lib-file src="src/android/google-play-services.jar" />-->
+        <lib-file src="src/android/notification-hubs-0.3.jar" />
+        <!--<lib-file src="src/android/android-support-v4.jar" />-->
     </platform>
         <!-- ios -->
     <platform name="ios">
@@ -83,6 +87,8 @@ xmlns:android="http://schemas.android.com/apk/res/android"
         </config-file>
         <header-file src="src/ios/NotificationHub.h" />
         <source-file src="src/ios/NotificationHub.m" />
+        <header-file src="src/ios/AppDelegate+AzureNotifications.h" />
+        <source-file src="src/ios/AppDelegate+AzureNotifications.m" />
         <framework src="src/ios/WindowsAzureMessaging.framework" custom="true" />
     </platform>
 </plugin>

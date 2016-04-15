@@ -3,18 +3,23 @@ package msopentech.azure;
 import java.util.Set;
 
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaActivity;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.app.NotificationCompat;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.microsoft.windowsazure.messaging.NativeRegistration;
+import com.microsoft.windowsazure.messaging.Registration;
 
 /**
  * Apache Cordova plugin for Windows Azure Notification Hub
@@ -34,8 +39,9 @@ public class NotificationHub extends CordovaPlugin {
             if (action.equals("registerApplication")) {   
                     String hubName = args.getString(0);
                     String connectionString = args.getString(1);
+                    String tag = args.getString(3);
                     String senderId = args.getString(4);
-                    registerApplication(hubName, connectionString, senderId);
+                    registerApplication(hubName, connectionString, tag, senderId);
                     return true;
             }
             
@@ -57,7 +63,7 @@ public class NotificationHub extends CordovaPlugin {
      * Asynchronously registers the device for native notifications.
      */
     @SuppressWarnings("unchecked")
-    private void registerApplication(final String hubName, final String connectionString, final String senderId) {
+    private void registerApplication(final String hubName, final String connectionString, final String tags, final String senderId) {
 
         try {
             final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(cordova.getActivity());
@@ -69,11 +75,11 @@ public class NotificationHub extends CordovaPlugin {
                 protected Object doInBackground(Object... params) {
                    try {
                       String gcmId = gcm.register(senderId);
-                      NativeRegistration registrationInfo = hub.register(gcmId);
+                      Registration registrationInfo = hub.register(gcmId, tags);
                       
                       JSONObject registrationResult = new JSONObject();
                       registrationResult.put("registrationId", registrationInfo.getRegistrationId());
-                      registrationResult.put("channelUri", registrationInfo.getGCMRegistrationId());
+                      registrationResult.put("channelUri", registrationInfo.getURI());
                       registrationResult.put("notificationHubPath", registrationInfo.getNotificationHubPath());
                       registrationResult.put("event", "registerApplication");
                       
@@ -116,6 +122,19 @@ public class NotificationHub extends CordovaPlugin {
         @Override
         public void onReceive(Context context, Intent intent) {
             
+			//always display system notification
+			String contentTitle = "financial";
+			String contentMessage = intent.getExtras().get("message").toString();
+
+			try {
+				contentTitle = context.getString(context.getApplicationInfo().labelRes);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+
+            displayNotification(context, getDrawableIcon(context), contentTitle, contentMessage);
+
             if (NotificationHub.getCallbackContext() == null){
                 return;
             }                                    
@@ -133,7 +152,38 @@ public class NotificationHub extends CordovaPlugin {
                 e.printStackTrace();
             }
         }
-        
+		
+		private void displayNotification(Context context, Integer icon, String contentTitle, String contentMessage) {
+
+            PendingIntent contentIntent = PendingIntent.getActivity(context.getApplicationContext(), 0,
+                    new Intent(context.getApplicationContext(), context.getApplicationContext().getClass()), 0);
+
+
+            NotificationCompat.Builder mBuilder =
+					new NotificationCompat.Builder(context)
+					.setSmallIcon(icon)
+					.setContentTitle(contentTitle)
+					.setContentText(contentMessage);
+		
+			mBuilder.setContentIntent(contentIntent);
+			mBuilder.setDefaults(Notification.DEFAULT_SOUND);
+			mBuilder.setAutoCancel(true);
+		
+			NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+			mNotificationManager.notify(1, mBuilder.build());
+		}
+
+        private int getDrawableIcon (Context ctx) {
+            Context context = ctx.getApplicationContext();
+            String pkgName = context.getPackageName();
+
+            int resId;
+            resId = context.getResources().getIdentifier("icon", "drawable", pkgName);
+
+            return resId;
+        }
+
+
     }
     
     /**
