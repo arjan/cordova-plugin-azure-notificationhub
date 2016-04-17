@@ -122,16 +122,17 @@ public class NotificationHub extends CordovaPlugin {
         @Override
         public void onReceive(Context context, Intent intent) {
             
-			//always display system notification
-			String contentTitle = "financial";
-			String contentMessage = intent.getExtras().get("message").toString();
+            //always display system notification
+            String contentTitle;
 
-			try {
-				contentTitle = context.getString(context.getApplicationInfo().labelRes);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+            String contentMessage = intent.getExtras().get("message").toString();
+
+            try {
+                contentTitle = context.getString(context.getApplicationInfo().labelRes);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
 
             displayNotification(context, getDrawableIcon(context), contentTitle, contentMessage);
 
@@ -152,26 +153,26 @@ public class NotificationHub extends CordovaPlugin {
                 e.printStackTrace();
             }
         }
-		
-		private void displayNotification(Context context, Integer icon, String contentTitle, String contentMessage) {
+        
+        private void displayNotification(Context context, Integer icon, String contentTitle, String contentMessage) {
 
             PendingIntent contentIntent = PendingIntent.getActivity(context.getApplicationContext(), 0,
                     new Intent(context.getApplicationContext(), context.getApplicationContext().getClass()), 0);
 
 
             NotificationCompat.Builder mBuilder =
-					new NotificationCompat.Builder(context)
-					.setSmallIcon(icon)
-					.setContentTitle(contentTitle)
-					.setContentText(contentMessage);
-		
-			mBuilder.setContentIntent(contentIntent);
-			mBuilder.setDefaults(Notification.DEFAULT_SOUND);
-			mBuilder.setAutoCancel(true);
-		
-			NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-			mNotificationManager.notify(1, mBuilder.build());
-		}
+                    new NotificationCompat.Builder(context)
+                    .setSmallIcon(icon)
+                    .setContentTitle(contentTitle)
+                    .setContentText(contentMessage);
+        
+            mBuilder.setContentIntent(contentIntent);
+            mBuilder.setDefaults(Notification.DEFAULT_SOUND);
+            mBuilder.setAutoCancel(true);
+        
+            NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotificationManager.notify(1, mBuilder.build());
+        }
 
         private int getDrawableIcon (Context ctx) {
             Context context = ctx.getApplicationContext();
