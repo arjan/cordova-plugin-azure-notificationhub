@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-xmlns:android="http://schemas.android.com/apk/res/android"
-           id="msopentech.azure.NotificationHub"
-      version="0.0.1">
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android" id="msopentech.azure.NotificationHub" version="0.0.1">
+
     <name>Azure Notification Hub</name>
 
     <description>Cordova Azure Notification Hub Plugin</description>
@@ -77,8 +75,10 @@ xmlns:android="http://schemas.android.com/apk/res/android"
         <!--<lib-file src="src/android/google-play-services.jar" />-->
         <lib-file src="src/android/notification-hubs-0.3.jar" />
         <!--<lib-file src="src/android/android-support-v4.jar" />-->
+        
     </platform>
-        <!-- ios -->
+    
+    <!-- ios -->
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
             <feature name="NotificationHub">
@@ -91,4 +91,5 @@ xmlns:android="http://schemas.android.com/apk/res/android"
         <source-file src="src/ios/AppDelegate+AzureNotifications.m" />
         <framework src="src/ios/WindowsAzureMessaging.framework" custom="true" />
     </platform>
+    
 </plugin>
