@@ -72,9 +72,7 @@
         
         <source-file src="src/android/NotificationHub.java" target-dir="src/msopentech/azure" />
 
-        <!--<lib-file src="src/android/google-play-services.jar" />-->
-        <lib-file src="src/android/notification-hubs-0.3.jar" />
-        <!--<lib-file src="src/android/android-support-v4.jar" />-->
+        <lib-file src="src/android/notification-hubs-android-sdk-0.4.jar" />
         
     </platform>
     
