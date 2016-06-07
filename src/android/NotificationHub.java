@@ -123,7 +123,7 @@ public class NotificationHub extends CordovaPlugin {
         public void onReceive(Context context, Intent intent) {
             
             //always display system notification
-            String contentTitle;
+            String contentTitle = "";
 
             String contentMessage = intent.getExtras().get("message").toString();
 
