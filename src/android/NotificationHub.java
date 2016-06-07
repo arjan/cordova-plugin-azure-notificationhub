@@ -15,6 +15,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.support.v4.app.NotificationCompat;
 
@@ -156,9 +157,10 @@ public class NotificationHub extends CordovaPlugin {
         
         private void displayNotification(Context context, Integer icon, String contentTitle, String contentMessage) {
 
-            PendingIntent contentIntent = PendingIntent.getActivity(context.getApplicationContext(), 0,
-                    new Intent(context.getApplicationContext(), context.getApplicationContext().getClass()), 0);
-
+            PackageManager pm = context.getPackageManager();
+            Intent intent = pm.getLaunchIntentForPackage(context.getPackageName());
+            
+            PendingIntent contentIntent = PendingIntent.getActivity(context.getApplicationContext(), 0, intent , 0);
 
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(context)
