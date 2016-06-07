@@ -15,6 +15,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.support.v4.app.NotificationCompat;
 
@@ -39,9 +40,16 @@ public class NotificationHub extends CordovaPlugin {
             if (action.equals("registerApplication")) {   
                     String hubName = args.getString(0);
                     String connectionString = args.getString(1);
-                    String tag = args.getString(3);
+                    JSONArray jsonTags = args.getJSONArray(3);
+                    String[] tags = null;
+                    if (jsonTags != null) {
+                        tags = new String[jsonTags.length()];
+                        for (int i=0; i < jsonTags.length(); i++) {
+                            tags[i] = jsonTags.getString(i);
+                        }
+                    }
                     String senderId = args.getString(4);
-                    registerApplication(hubName, connectionString, tag, senderId);
+                    registerApplication(hubName, connectionString, tags, senderId);
                     return true;
             }
             
@@ -63,7 +71,7 @@ public class NotificationHub extends CordovaPlugin {
      * Asynchronously registers the device for native notifications.
      */
     @SuppressWarnings("unchecked")
-    private void registerApplication(final String hubName, final String connectionString, final String tags, final String senderId) {
+    private void registerApplication(final String hubName, final String connectionString, final String[] tags, final String senderId) {
 
         try {
             final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(cordova.getActivity());
@@ -123,7 +131,7 @@ public class NotificationHub extends CordovaPlugin {
         public void onReceive(Context context, Intent intent) {
             
             //always display system notification
-            String contentTitle;
+            String contentTitle = "";
 
             String contentMessage = intent.getExtras().get("message").toString();
 
@@ -156,9 +164,10 @@ public class NotificationHub extends CordovaPlugin {
         
         private void displayNotification(Context context, Integer icon, String contentTitle, String contentMessage) {
 
-            PendingIntent contentIntent = PendingIntent.getActivity(context.getApplicationContext(), 0,
-                    new Intent(context.getApplicationContext(), context.getApplicationContext().getClass()), 0);
-
+            PackageManager pm = context.getPackageManager();
+            Intent intent = pm.getLaunchIntentForPackage(context.getPackageName());
+            
+            PendingIntent contentIntent = PendingIntent.getActivity(context.getApplicationContext(), 0, intent , 0);
 
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(context)
@@ -179,8 +188,12 @@ public class NotificationHub extends CordovaPlugin {
             String pkgName = context.getPackageName();
 
             int resId;
-            resId = context.getResources().getIdentifier("icon", "drawable", pkgName);
+            resId = context.getResources().getIdentifier("ic_stat_notification", "drawable", pkgName);
+            if (resId != 0) {
+                return resId;
+            }
 
+            resId = context.getResources().getIdentifier("icon", "drawable", pkgName);
             return resId;
         }
 
