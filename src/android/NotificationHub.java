@@ -17,7 +17,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.microsoft.windowsazure.messaging.Registration;
@@ -36,8 +36,8 @@ public class NotificationHub extends CordovaPlugin {
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         _callbackContext = callbackContext;
         try {
-            
-            if (action.equals("registerApplication")) {   
+
+            if (action.equals("registerApplication")) {
                     String hubName = args.getString(0);
                     String connectionString = args.getString(1);
                     JSONArray jsonTags = args.getJSONArray(3);
@@ -52,15 +52,15 @@ public class NotificationHub extends CordovaPlugin {
                     registerApplication(hubName, connectionString, tags, senderId);
                     return true;
             }
-            
+
             if (action.equals("unregisterApplication")) {
                 String hubName = args.getString(0);
                 String connectionString = args.getString(1);
                 unregisterApplication(hubName, connectionString);
                 return true;
-            } 
-            
-            return false; // invalid action            
+            }
+
+            return false; // invalid action
         } catch (Exception e) {
             _callbackContext.error(e.getMessage());
         }
@@ -75,7 +75,7 @@ public class NotificationHub extends CordovaPlugin {
 
         try {
             final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(cordova.getActivity());
-            final com.microsoft.windowsazure.messaging.NotificationHub hub = 
+            final com.microsoft.windowsazure.messaging.NotificationHub hub =
                     new com.microsoft.windowsazure.messaging.NotificationHub(hubName, connectionString, cordova.getActivity());
 
             new AsyncTask() {
@@ -84,19 +84,19 @@ public class NotificationHub extends CordovaPlugin {
                    try {
                       String gcmId = gcm.register(senderId);
                       Registration registrationInfo = hub.register(gcmId, tags);
-                      
+
                       JSONObject registrationResult = new JSONObject();
                       registrationResult.put("registrationId", registrationInfo.getRegistrationId());
                       registrationResult.put("channelUri", registrationInfo.getURI());
                       registrationResult.put("notificationHubPath", registrationInfo.getNotificationHubPath());
                       registrationResult.put("event", "registerApplication");
-                      
+
                       PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, registrationResult);
                       // keepKallback is used to continue using the same callback to notify about push notifications received
-                      pluginResult.setKeepCallback(true); 
-                      
+                      pluginResult.setKeepCallback(true);
+
                       NotificationHub.getCallbackContext().sendPluginResult(pluginResult);
-                      
+
                    } catch (Exception e) {
                        NotificationHub.getCallbackContext().error(e.getMessage());
                    }
@@ -113,15 +113,15 @@ public class NotificationHub extends CordovaPlugin {
      */
     private void unregisterApplication(final String hubName, final String connectionString) {
         try {
-            final com.microsoft.windowsazure.messaging.NotificationHub hub = 
+            final com.microsoft.windowsazure.messaging.NotificationHub hub =
                     new com.microsoft.windowsazure.messaging.NotificationHub(hubName, connectionString, cordova.getActivity());
             hub.unregister();
-            NotificationHub.getCallbackContext().success();            
+            NotificationHub.getCallbackContext().success();
         } catch (Exception e) {
             NotificationHub.getCallbackContext().error(e.getMessage());
         }
     }
-    
+
     /**
      * Handles push notifications received.
      */
@@ -129,7 +129,7 @@ public class NotificationHub extends CordovaPlugin {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            
+
             //always display system notification
             String contentTitle = "";
 
@@ -146,10 +146,10 @@ public class NotificationHub extends CordovaPlugin {
 
             if (NotificationHub.getCallbackContext() == null){
                 return;
-            }                                    
+            }
             JSONObject json = new JSONObject();
             try {
-                
+
                 Set<String> keys = intent.getExtras().keySet();
                 for (String key : keys) {
                     json.put(key, intent.getExtras().get(key));
@@ -161,12 +161,12 @@ public class NotificationHub extends CordovaPlugin {
                 e.printStackTrace();
             }
         }
-        
+
         private void displayNotification(Context context, Integer icon, String contentTitle, String contentMessage) {
 
             PackageManager pm = context.getPackageManager();
             Intent intent = pm.getLaunchIntentForPackage(context.getPackageName());
-            
+
             PendingIntent contentIntent = PendingIntent.getActivity(context.getApplicationContext(), 0, intent , 0);
 
             NotificationCompat.Builder mBuilder =
@@ -174,11 +174,11 @@ public class NotificationHub extends CordovaPlugin {
                     .setSmallIcon(icon)
                     .setContentTitle(contentTitle)
                     .setContentText(contentMessage);
-        
+
             mBuilder.setContentIntent(contentIntent);
             mBuilder.setDefaults(Notification.DEFAULT_SOUND);
             mBuilder.setAutoCancel(true);
-        
+
             NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationManager.notify(1, mBuilder.build());
         }
@@ -199,7 +199,7 @@ public class NotificationHub extends CordovaPlugin {
 
 
     }
-    
+
     /**
      * Returns plugin callback.
      */
