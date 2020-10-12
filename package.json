@@ -1,0 +1,33 @@
+{
+  "name": "cordova-plugin-azure-notificationhub",
+  "version": "0.0.9",
+  "description": "Cordova plugin that allows camera interaction from HTML code. Show camera preview below or on top of the HTML.",
+  "keywords": [
+    "cordova",
+    "phonegap",
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios",
+    "android",
+    "ios",
+    "ionic",
+    "camera",
+    "cam",
+    "camera-preview",
+    "preview"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arjan/cordova-plugin-azure-notificationhub"
+  },
+  "author": {
+    "name": "Arjan Scherpenisse",
+    "email": "arjan@scherpenisse.net"
+  },
+  "license": "Apache 2.0",
+  "homepage": "https://github.com/arjan/cordova-plugin-azure-notificationhub",
+  "dependencies": {
+    "cordova": "*"
+  },
+  "devDependencies": {}
+}
