@@ -43,6 +43,12 @@
 {
     self.notificationHubPath = [command.arguments objectAtIndex:0];
     self.connectionString = [command.arguments objectAtIndex:1];
+    NSArray *tagList = [command.arguments objectAtIndex:3];
+    if (tagList != nil) {
+       self.tags = [NSSet setWithArray:tagList];
+    } else {
+        self.tags = nil;
+    }
     
     self.callbackId = command.callbackId;
     
@@ -62,7 +68,7 @@
     
     NSString *notificationHubPath = [command.arguments objectAtIndex:0];
     NSString *connectionString = [command.arguments objectAtIndex:1];
-    
+  
     SBNotificationHub* hub = [[SBNotificationHub alloc] initWithConnectionString:connectionString notificationHubPath:notificationHubPath];
     
     [hub unregisterNativeWithCompletion:^(NSError* error) {
@@ -88,7 +94,7 @@
     SBNotificationHub* hub = [[SBNotificationHub alloc] initWithConnectionString:
                               self.connectionString notificationHubPath:self.notificationHubPath];
 
-    [hub registerNativeWithDeviceToken:deviceToken tags:nil completion:^(NSError* error) {
+    [hub registerNativeWithDeviceToken:deviceToken tags:self.tags completion:^(NSError* error) {
         if (error != nil) {
             [self failWithError:error];
             return;
@@ -119,7 +125,7 @@
     SBNotificationHub* hub = [[SBNotificationHub alloc] initWithConnectionString:
                               self.connectionString notificationHubPath:self.notificationHubPath];
 
-    [hub registerNativeWithDeviceToken:deviceToken tags:nil completion:^(NSError* error) {
+    [hub registerNativeWithDeviceToken:deviceToken tags:self.tags completion:^(NSError* error) {
         if (error != nil) {
             [self failWithError:error];
             return;
@@ -144,10 +150,13 @@
 
 - (void)didReceiveRemoteNotification:(NSNotification *)notif
 {
+    NSMutableDictionary *message = [[NSMutableDictionary alloc] init];
     NSDictionary* userInfo = notif.object;
-    NSDictionary* apsInfo = [userInfo objectForKey:@"aps"];
     
-    [self reportResult: apsInfo keepCallback:[NSNumber numberWithInteger: TRUE]];
+    [message addEntriesFromDictionary: [userInfo objectForKey:@"aps"]];
+    [message addEntriesFromDictionary: [userInfo objectForKey:@"data"]];
+    
+    [self reportResult: message keepCallback:[NSNumber numberWithInteger: TRUE]];
 }
 
 -(void)reportResult:(NSDictionary*)result keepCallback:(NSNumber*)keepCalback
